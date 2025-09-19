@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trình Tạo Prompt Veo Thông Minh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200 flex items-center justify-center min-h-screen px-4 py-8">
+
+    <div class="w-full max-w-3xl mx-auto">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl p-6 sm:p-8">
+            
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Trình Tạo Prompt Veo Thông Minh</h1>
+                <p class="text-slate-400">Chỉ cần nhập ý tưởng, AI sẽ viết mô tả chi tiết cho bạn.</p>
+            </div>
+
+            <!-- Input Form -->
+            <div class="space-y-6">
+                <div>
+                    <label for="idea-input" class="block text-sm font-medium text-slate-300 mb-2">Ý tưởng chính (Tiếng Việt)</label>
+                    <textarea id="idea-input" rows="4" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200" placeholder="Ví dụ: Một phi hành gia tìm thấy một bông hoa phát sáng trên sao Hỏa"></textarea>
+                </div>
+
+                <div>
+                    <label for="dialogue-input" class="block text-sm font-medium text-slate-300 mb-2">Câu thoại (Tiếng Việt, không bắt buộc)</label>
+                    <textarea id="dialogue-input" rows="2" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200" placeholder="Ví dụ: Sự sống... ở đây sao?"></textarea>
+                </div>
+                
+                <button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-3 transition-all duration-300 disabled:opacity-75 disabled:cursor-not-allowed">
+                    <svg id="btn-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wand-sparkles"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2 18.88l5.12 5.12L21.64 5.36a1.21 1.21 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                    <span id="btn-text">Tạo Prompt Chi Tiết</span>
+                    <div id="btn-loader" class="hidden animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                </button>
+            </div>
+
+            <!-- Output Section -->
+            <div id="output-section" class="mt-8 pt-6 border-t border-slate-700 hidden">
+                <h2 class="text-lg font-semibold text-white mb-3">Prompt Tiếng Anh Hoàn Chỉnh:</h2>
+                <div class="bg-slate-900 rounded-lg p-4 border border-slate-700 relative">
+                    <p id="prompt-output" class="text-slate-300 whitespace-pre-wrap pr-16"></p>
+                    <button id="copy-btn" title="Sao chép" class="absolute top-3 right-3 bg-slate-700 hover:bg-slate-600 text-slate-300 p-2 rounded-md transition duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    </button>
+                </div>
+                 <p id="copy-feedback" class="text-sm text-green-400 mt-2 text-right h-4"></p>
+            </div>
+
+        </div>
+        <footer class="text-center mt-6 text-sm text-slate-500">
+            <p>Tạo video 8 giây với giọng nói Tiếng Việt dễ nghe.</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const ideaInput = document.getElementById('idea-input');
+        const dialogueInput = document.getElementById('dialogue-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const btnIcon = document.getElementById('btn-icon');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        const outputSection = document.getElementById('output-section');
+        const promptOutput = document.getElementById('prompt-output');
+        const copyBtn = document.getElementById('copy-btn');
+        const copyFeedback = document.getElementById('copy-feedback');
+
+        // Function to call Gemini API
+        async function generateDetails(idea) {
+            const apiKey = ""; // API key is handled by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const systemPrompt = `You are a creative assistant for a video creator. Your task is to take a simple idea in Vietnamese and expand it into a detailed scene description for a short video. Provide a detailed 'Setting', 'Characters', and 'Action' in English. Respond ONLY with the descriptions, formatted exactly like this, without any other text or explanation:
+SETTING: [Your detailed description of the setting]
+CHARACTERS: [Your detailed description of the characters]
+ACTION: [Your detailed description of the action]`;
+
+            const payload = {
+                contents: [{ parts: [{ text: idea }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    throw new Error(`API call failed with status: ${response.status}`);
+                }
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!text) {
+                    throw new Error("No content received from API.");
+                }
+
+                // Parse the response text to extract details
+                const settingMatch = text.match(/SETTING:([\s\S]*?)(?:CHARACTERS:|$)/);
+                const charactersMatch = text.match(/CHARACTERS:([\s\S]*?)(?:ACTION:|$)/);
+                const actionMatch = text.match(/ACTION:([\s\S]*)/);
+                
+                const details = {
+                    setting: settingMatch ? settingMatch[1].trim() : 'Not specified by AI.',
+                    characters: charactersMatch ? charactersMatch[1].trim() : 'Not specified by AI.',
+                    action: actionMatch ? actionMatch[1].trim() : 'Not specified by AI.'
+                };
+                
+                return details;
+
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                return null;
+            }
+        }
+
+        // Event listener for the generate button
+        generateBtn.addEventListener('click', async () => {
+            const idea = ideaInput.value.trim();
+            const dialogue = dialogueInput.value.trim();
+
+            if (!idea) {
+                ideaInput.focus();
+                return;
+            }
+            
+            // --- Set loading state ---
+            generateBtn.disabled = true;
+            btnIcon.classList.add('hidden');
+            btnText.textContent = 'Đang xử lý...';
+            btnLoader.classList.remove('hidden');
+            outputSection.classList.add('hidden');
+            copyFeedback.textContent = '';
+
+
+            const generatedDetails = await generateDetails(idea);
+
+            // --- Revert button state ---
+            generateBtn.disabled = false;
+            btnIcon.classList.remove('hidden');
+            btnText.textContent = 'Tạo Prompt Chi Tiết';
+            btnLoader.classList.add('hidden');
+
+            if (!generatedDetails) {
+                promptOutput.textContent = "Đã xảy ra lỗi khi tạo mô tả bằng AI. Vui lòng thử lại sau.";
+                outputSection.classList.remove('hidden');
+                return;
+            }
+
+            const { setting, characters, action } = generatedDetails;
+            
+            // Construct the final English prompt
+            const promptParts = ["A cinematic, photorealistic 8-second video."];
+            if (setting) promptParts.push(`Setting: ${setting}`);
+            if (characters) promptParts.push(`Characters: ${characters}`);
+            if (action) promptParts.push(`Action: ${action}`);
+
+            if (dialogue) {
+                promptParts.push(`The spoken dialogue must be in clear, easy-to-understand Vietnamese. A character says: "${dialogue}"`);
+            } else {
+                promptParts.push(`IMPORTANT: The final video must feature spoken dialogue in clear, easy-to-understand Vietnamese if appropriate for the scene; otherwise, it can be silent.`);
+            }
+
+            const finalPrompt = promptParts.join('\n\n');
+            
+            // Display the output
+            promptOutput.textContent = finalPrompt;
+            outputSection.classList.remove('hidden');
+        });
+
+        // Event listener for the copy button
+        copyBtn.addEventListener('click', () => {
+            const textToCopy = promptOutput.textContent;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                document.execCommand('copy');
+                copyFeedback.textContent = 'Đã sao chép!';
+                copyBtn.classList.add('text-green-400');
+            } catch (err) {
+                copyFeedback.textContent = 'Sao chép thất bại!';
+                console.error('Failed to copy text: ', err);
+            }
+            
+            document.body.removeChild(tempTextArea);
+
+            setTimeout(() => {
+                copyFeedback.textContent = '';
+                copyBtn.classList.remove('text-green-400');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
+
