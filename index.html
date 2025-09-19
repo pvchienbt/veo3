@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trình Tạo Prompt Veo Thông Minh</title>
+    <title>Widget Tạo Prompt Veo Thông Minh</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,9 +14,9 @@
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-200 flex items-center justify-center min-h-screen px-4 py-8">
+<body class="bg-slate-900 text-slate-200 py-8">
 
-    <div class="w-full max-w-3xl mx-auto">
+    <div class="w-full max-w-3xl mx-auto px-4">
         <div class="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl p-6 sm:p-8">
             
             <!-- Header -->
@@ -77,7 +77,18 @@
 
         // Function to call Gemini API
         async function generateDetails(idea) {
-            const apiKey = ""; // API key is handled by the environment
+            // ===================================================================
+            // API Key của bạn đã được thêm vào
+            // ===================================================================
+            const apiKey = "AIzaSyAEIu54a3POyuqhep5nU-Eoc521TTldxkE";
+
+            if (apiKey === "YOUR_API_KEY_HERE") {
+                 console.error("API Key is missing. Please add your Gemini API Key.");
+                 promptOutput.textContent = "Lỗi: Vui lòng thêm Gemini API Key của bạn vào trong mã nguồn để ứng dụng hoạt động.";
+                 outputSection.classList.remove('hidden');
+                 return null;
+            }
+            
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
             const systemPrompt = `You are a creative assistant for a video creator. Your task is to take a simple idea in Vietnamese and expand it into a detailed scene description for a short video. Provide a detailed 'Setting', 'Characters', and 'Action' in English. Respond ONLY with the descriptions, formatted exactly like this, without any other text or explanation:
@@ -154,8 +165,12 @@ ACTION: [Your detailed description of the action]`;
             btnLoader.classList.add('hidden');
 
             if (!generatedDetails) {
-                promptOutput.textContent = "Đã xảy ra lỗi khi tạo mô tả bằng AI. Vui lòng thử lại sau.";
-                outputSection.classList.remove('hidden');
+                // The error message is now handled inside generateDetails if the key is missing
+                // This block will now primarily catch network errors or other API issues.
+                if (!promptOutput.textContent.includes("API Key")) {
+                     promptOutput.textContent = "Đã xảy ra lỗi khi tạo mô tả bằng AI. Vui lòng thử lại sau.";
+                     outputSection.classList.remove('hidden');
+                }
                 return;
             }
 
