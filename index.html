@@ -3,223 +3,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tạo Prompt Veo 3</title>
+    <title>Công Cụ Tạo Prompt VEO 3 Tự Động</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f0f4f8; }
+        .card { background-color: white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+        .prompt-box { background-color: #e2e8f0; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; }
+        .scene-card { border-left: 4px solid #3b82f6; }
+        .spinner { border: 4px solid rgba(0, 0, 0, 0.1); border-left-color: #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .preview-item { max-height: 100px; width: auto; border-radius: 0.5rem; object-fit: cover; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-200 py-8">
+<body class="p-4 md:p-8 min-h-screen">
 
-    <div class="w-full max-w-3xl mx-auto px-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl p-6 sm:p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">
+            Công Cụ Tạo Prompt Video VEO 3 (Gemini AI)
+        </h1>
+        <div class="card p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">1. Nhập Ý Tưởng Video & Đa Phương Tiện</h2>
             
-            <!-- Header -->
-            <div class="text-center mb-8">
-                <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Tạo Prompt Veo 3 cùng Thầy Chiến</h1>
-                <p class="text-slate-400">Chỉ cần nhập ý tưởng, Thầy Chiến sẽ viết mô tả chi tiết cho bạn.</p>
-            </div>
-
             <!-- Input Form -->
-            <div class="space-y-6">
+            <div class="space-y-4">
                 <div>
-                    <label for="idea-input" class="block text-sm font-medium text-slate-300 mb-2">Ý tưởng chính (Tiếng Việt)</label>
-                    <textarea id="idea-input" rows="4" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200" placeholder="Ví dụ: Một phi hành gia tìm thấy một bông hoa phát sáng trên sao Hỏa"></textarea>
-                </div>
-
-                <div>
-                    <label for="dialogue-input" class="block text-sm font-medium text-slate-300 mb-2">Câu thoại (Tiếng Việt, không bắt buộc)</label>
-                    <textarea id="dialogue-input" rows="2" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200" placeholder="Ví dụ: Sự sống... ở đây sao?"></textarea>
+                    <label for="videoIdea" class="block text-sm font-medium text-gray-700 mb-1">Tóm tắt Ý tưởng (Ví dụ: Một cô gái văn phòng thất nghiệp bắt đầu kinh doanh bánh mì)</label>
+                    <textarea id="videoIdea" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Viết ý tưởng của bạn vào đây..."></textarea>
                 </div>
                 
-                <button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-3 transition-all duration-300 disabled:opacity-75 disabled:cursor-not-allowed">
-                    <svg id="btn-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wand-sparkles"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2 18.88l5.12 5.12L21.64 5.36a1.21 1.21 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
-                    <span id="btn-text">Tạo Prompt Chi Tiết</span>
-                    <div id="btn-loader" class="hidden animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                </button>
-            </div>
-
-            <!-- Output Section -->
-            <div id="output-section" class="mt-8 pt-6 border-t border-slate-700 hidden">
-                <h2 class="text-lg font-semibold text-white mb-3">Prompt Tiếng Anh Hoàn Chỉnh:</h2>
-                <div class="bg-slate-900 rounded-lg p-4 border border-slate-700 relative">
-                    <p id="prompt-output" class="text-slate-300 whitespace-pre-wrap pr-16"></p>
-                    <button id="copy-btn" title="Sao chép" class="absolute top-3 right-3 bg-slate-700 hover:bg-slate-600 text-slate-300 p-2 rounded-md transition duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                    </button>
+                <!-- Image Upload -->
+                <div class="border-t border-gray-200 pt-4">
+                    <label for="imageUpload" class="block text-sm font-medium text-gray-700 mb-1">
+                        Tải lên Hình ảnh Mô tả (Tùy chọn - Dùng làm NGUỒN CHÍNH XÁC 100% cho hình ảnh)
+                    </label>
+                    <input type="file" id="imageUpload" accept="image/*" multiple class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                    <div id="imagePreviewContainer" class="mt-3 flex flex-wrap gap-2 justify-center p-3 border border-dashed border-gray-300 rounded-lg hidden">
+                        <!-- Image previews will be injected here -->
+                    </div>
                 </div>
-                 <p id="copy-feedback" class="text-sm text-green-400 mt-2 text-right h-4"></p>
+
+                <!-- Chức năng tải lên Giọng nói đã bị loại bỏ để đảm bảo tính ổn định -->
+
+                <div>
+                    <label for="numScenes" class="block text-sm font-medium text-gray-700 mb-1">Số Phân Cảnh (Tối thiểu 1, tối đa 100)</label>
+                    <input type="number" id="numScenes" value="4" min="1" max="100" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                </div>
             </div>
 
+            <button id="generateBtn" 
+                    class="mt-6 w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 disabled:opacity-50">
+                <span id="btnText">Tạo Kịch Bản & Prompt</span>
+                <div id="loadingSpinner" class="spinner ml-3 hidden"></div>
+            </button>
         </div>
-        <footer class="text-center mt-6 text-sm text-slate-500">
-            <p>Tạo video 8 giây với giọng nói Tiếng Việt dễ nghe.</p>
-        </footer>
+
+        <!-- Output Display Area -->
+        <div id="outputSection" class="hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">2. Kết Quả Kịch Bản & Prompt</h2>
+            <div id="videoTitleDisplay" class="text-xl font-semibold mb-4 p-3 bg-indigo-100 text-indigo-800 rounded-lg shadow-inner"></div>
+            <div id="scenesContainer" class="space-y-6">
+                <!-- Scenes will be injected here -->
+            </div>
+        </div>
+
+        <!-- Error/Message Display -->
+        <div id="messageArea" class="hidden mt-6 p-4 text-sm rounded-lg bg-red-100 text-red-700" role="alert"></div>
     </div>
 
-    <script>
-        // DOM Elements
-        const ideaInput = document.getElementById('idea-input');
-        const dialogueInput = document.getElementById('dialogue-input');
-        const generateBtn = document.getElementById('generate-btn');
-        const btnIcon = document.getElementById('btn-icon');
-        const btnText = document.getElementById('btn-text');
-        const btnLoader = document.getElementById('btn-loader');
-        const outputSection = document.getElementById('output-section');
-        const promptOutput = document.getElementById('prompt-output');
-        const copyBtn = document.getElementById('copy-btn');
-        const copyFeedback = document.getElementById('copy-feedback');
+    <script type="module">
+        // Import các module Firebase cần thiết (Không thay đổi)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Function to call Gemini API
-        async function generateDetails(idea) {
-            // ===================================================================
-            // API Key của bạn đã được thêm vào
-            // ===================================================================
-            const apiKey = "AIzaSyAEIu54a3POyuqhep5nU-Eoc521TTldxkE";
+        // Cấu hình API và Firebase
+        const apiKey = "AIzaSyDq3M4VIxG8XgLzjYqDsUiV2Yvp0ukLPvM"; 
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
 
-            if (apiKey === "YOUR_API_KEY_HERE") {
-                 console.error("API Key is missing. Please add your Gemini API Key.");
-                 promptOutput.textContent = "Lỗi: Vui lòng thêm Gemini API Key của bạn vào trong mã nguồn để ứng dụng hoạt động.";
-                 outputSection.classList.remove('hidden');
-                 return null;
-            }
-            
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        let db, auth;
+        setLogLevel('debug'); 
 
-            const systemPrompt = `You are a creative assistant for a video creator. Your task is to take a simple idea in Vietnamese and expand it into a detailed scene description for a short video. Provide a detailed 'Setting', 'Characters', and 'Action' in English. Respond ONLY with the descriptions, formatted exactly like this, without any other text or explanation:
-SETTING: [Your detailed description of the setting]
-CHARACTERS: [Your detailed description of the characters]
-ACTION: [Your detailed description of the action]`;
+        // Khởi tạo Firebase (Không thay đổi)
+        if (Object.keys(firebaseConfig).length > 0) {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
 
-            const payload = {
-                contents: [{ parts: [{ text: idea }] }],
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
-            };
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            if (initialAuthToken) {
+                signInWithCustomToken(auth, initialAuthToken).catch(error => {
+                    console.error("Firebase Custom Token Sign-In failed:", error);
+                    signInAnonymously(auth); 
                 });
-                if (!response.ok) {
-                    throw new Error(`API call failed with status: ${response.status}`);
-                }
-                const result = await response.json();
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (!text) {
-                    throw new Error("No content received from API.");
-                }
-
-                // Parse the response text to extract details
-                const settingMatch = text.match(/SETTING:([\s\S]*?)(?:CHARACTERS:|$)/);
-                const charactersMatch = text.match(/CHARACTERS:([\s\S]*?)(?:ACTION:|$)/);
-                const actionMatch = text.match(/ACTION:([\s\S]*)/);
-                
-                const details = {
-                    setting: settingMatch ? settingMatch[1].trim() : 'Not specified by AI.',
-                    characters: charactersMatch ? charactersMatch[1].trim() : 'Not specified by AI.',
-                    action: actionMatch ? actionMatch[1].trim() : 'Not specified by AI.'
-                };
-                
-                return details;
-
-            } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                return null;
+            } else {
+                signInAnonymously(auth);
             }
+        } else {
+            console.warn("Firebase config not available. App will function without persistence.");
         }
 
-        // Event listener for the generate button
-        generateBtn.addEventListener('click', async () => {
-            const idea = ideaInput.value.trim();
-            const dialogue = dialogueInput.value.trim();
+        // --- UI Element Selectors ---
+        const generateBtn = document.getElementById('generateBtn');
+        const videoIdeaInput = document.getElementById('videoIdea');
+        const numScenesInput = document.getElementById('numScenes');
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const btnText = document.getElementById('btnText');
+        const outputSection = document.getElementById('outputSection');
+        const videoTitleDisplay = document.getElementById('videoTitleDisplay');
+        const scenesContainer = document.getElementById('scenesContainer');
+        const messageArea = document.getElementById('messageArea');
 
-            if (!idea) {
-                ideaInput.focus();
-                return;
-            }
-            
-            // --- Set loading state ---
-            generateBtn.disabled = true;
-            btnIcon.classList.add('hidden');
-            btnText.textContent = 'Đang xử lý...';
-            btnLoader.classList.remove('hidden');
-            outputSection.classList.add('hidden');
-            copyFeedback.textContent = '';
-
-
-            const generatedDetails = await generateDetails(idea);
-
-            // --- Revert button state ---
-            generateBtn.disabled = false;
-            btnIcon.classList.remove('hidden');
-            btnText.textContent = 'Tạo Prompt Chi Tiết';
-            btnLoader.classList.add('hidden');
-
-            if (!generatedDetails) {
-                // The error message is now handled inside generateDetails if the key is missing
-                // This block will now primarily catch network errors or other API issues.
-                if (!promptOutput.textContent.includes("API Key")) {
-                     promptOutput.textContent = "Đã xảy ra lỗi khi tạo mô tả bằng AI. Vui lòng thử lại sau.";
-                     outputSection.classList.remove('hidden');
+        // --- Helper Function: Convert File to Base64 (Robust) ---
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) return reject(new Error("File object is missing."));
+                
+                // Giới hạn kích thước file an toàn (10MB) cho các yêu cầu Multimodal
+                if (file.size > 10 * 1024 * 1024) { 
+                    return reject(new Error(`Tệp "${file.name}" quá lớn (max 10MB).`));
                 }
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        const base64Data = reader.result.split(',')[1];
+                        if (!base64Data) {
+                            throw new Error("Base64 data extraction failed.");
+                        }
+                        resolve({
+                            data: base64Data,
+                            mimeType: file.type
+                        });
+                    } catch (e) {
+                        reject(new Error(`Conversion error for file ${file.name}: ${e.message}`));
+                    }
+                };
+                reader.onerror = error => reject(new Error(`FileReader error for file ${file.name}: ${error.target.error.code}`));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // --- Event Listener for Image Preview (Updated for multiple files) ---
+        imageUpload.addEventListener('change', function() {
+            imagePreviewContainer.innerHTML = ''; // Clear previous previews
+            const files = this.files;
+            if (files.length > 0) {
+                imagePreviewContainer.classList.remove('hidden');
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'preview-item object-cover h-24 w-auto border border-gray-200 rounded-md shadow-md'; 
+                        img.alt = 'Hình ảnh xem trước';
+                        imagePreviewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                imagePreviewContainer.classList.add('hidden');
+            }
+        });
+        
+        // --- Cấu trúc JSON bắt buộc cho Gemini (Rule 7) ---
+        const responseSchema = {
+            type: "OBJECT",
+            properties: {
+                "video_title": { "type": "STRING", "description": "Tên hấp dẫn cho video bằng tiếng Việt." },
+                "scenes": {
+                    "type": "ARRAY",
+                    "description": "Mảng các phân cảnh, mỗi cảnh tối đa 8 giây và đảm bảo tính liên tục 100% về hình ảnh và nhân vật.",
+                    "items": {
+                        "type": "OBJECT",
+                        "properties": {
+                            "scene_number": { "type": "NUMBER" },
+                            "duration_seconds": { "type": "STRING", "description": "Luôn là '8s'" },
+                            "vietnamese_script": { "type": "STRING", "description": "Mô tả chi tiết hành động và lời thoại bằng tiếng Việt." },
+                            "veo_prompt_en": { "type": "STRING", "description": "Prompt tiếng Anh cho VEO 3. BẮT BUỘC bắt đầu bằng việc LẶP LẠI TOÀN BỘ mô tả bối cảnh và nhân vật đã được tạo trong Cảnh 1. TẤT CẢ lời thoại BẮT BUỘNG là tiếng Việt và có mô tả giọng nói cố định 100%." }
+                        },
+                        "required": ["scene_number", "duration_seconds", "vietnamese_script", "veo_prompt_en"]
+                    }
+                }
+            },
+            "required": ["video_title", "scenes"]
+        };
+
+
+        // --- Quy tắc BẮT BUỘNG (System Instruction) - TÍNH ĐỒNG NHẤT 100% GIỌNG NÓI ĐÃ ĐƯỢC ÉP BUỘC ---
+        const systemInstructionText = `
+            Bạn là một chuyên gia sáng tạo kịch bản video chuyên nghiệp. Nhiệm vụ của bạn là xây dựng một kịch bản video chi tiết và chuyển nó thành một chuỗi các prompt tiếng Anh sẵn sàng để đưa vào các mô hình AI tạo video (như Veo 3).
+
+            Các quy tắc BẮT BUỘC và ĐÃ ĐƯỢC CẢI TIẾN để đảm bảo tính đồng nhất 100%:
+            1. Video phải được chia thành nhiều PHÂN CẢNH (SCENE).
+            2. MỖI PHÂN CẢNH có độ dài TỐI ĐA là 8 GIÂY.
+            3. PHẢI đảm bảo TÍNH LIÊN TỤC 100% về bối cảnh, ngoại hình, trang phục, và phong cách hình ảnh (style) giữa tất cả các phân cảnh.
+            4. MỖI PHÂN CẢNH PHẢI được viết thành 1 PROMPT TIẾNG ANH ĐỘC LẬP.
+            5. PROMPT TIẾNG ANH của mỗi phân cảnh PHẢI BẮT ĐẦU bằng việc LẶP LẠI TOÀN BỘ MÔ TẢ BỐI CẢNH VÀ NHÂN VẬT CHÍNH đã được tạo trong phân cảnh trước đó, KHÔNG ĐƯỢC THAY ĐỔI CHI TIẾT.
+            6. TẤT CẢ LỜI THOẠI CỦA NHÂN VẬT BẮT BUỘC PHẢI LÀ TIẾNG VIỆT. Lời thoại PHẢI CỰC KỲ NGẮN GỌN (tối đa 5-6 giây nói) để phù hợp với giới hạn 8 giây của cảnh quay. Lời thoại phải được đưa vào prompt dưới dạng: 'A character is speaking in Vietnamese with the **FIXED VOICE ID** "[Định danh giọng nói cố định, e.g., smooth young female voice with a strong Hanoian accent]" saying "[Lời thoại tiếng Việt ngắn gọn của nhân vật]"'. BẮT BUỘC phải: Tự tạo ra **CHÍNH XÁC MỘT CHUỖI KÝ TỰ MÔ TẢ ID GIỌNG NÓI DUY NHẤT (Fixed Voice ID)** cho nhân vật chính (mô tả âm sắc, cao độ, tốc độ, chất giọng) dựa trên mô tả kịch bản. Sử dụng **LẶP LẠI CHUỖI KÝ TỰ Fixed Voice ID NÀY, GIỐNG 100% (IDENTICAL STRING REPLICATION)**, cho nhân vật đó trong TẤT CẢ các phân cảnh sau. **Bất kỳ sai lệch nào dù chỉ 1 ký tự cũng bị CẤM.** KHÔNG ĐƯỢC TẠO VIDEO KHÔNG CÓ THOẠI VÀ KHÔNG ĐƯỢC CÓ BẤT CÁI LỜI THOẠI NÀO BẰNG TIẾNG ANH DƯỚI BẤT CÁI HÌNH THỨC NÀO.
+            7. Đầu ra phải là một cấu trúc JSON.
+            8. Yêu cầu Chi tiết và Tích hợp Hình ảnh (Độ Giống 100% BẮT BUỘC): NẾU BỨC ẢNH HOẶC NHIỀU BỨC ẢNH ĐƯỢC CUNG CẤP, bạn PHẢI phân tích TẤT CẢ các bức ảnh đó, **TỔNG HỢP VÀ HỢP NHẤT TẤT CẢ CÁC CHI TIẾT QUAN SÁT ĐƯỢC** trong ảnh làm MÔ TẢ NGUỒN CHÍNH XÁC 100% (Source of Truth) cho tất cả các yếu tố hình ảnh. Đặc biệt, bạn PHẢI mô tả CÁC YẾU TỐ SAU VỚI TÍNH CHÍNH XÁC TUYỆT ĐỐI để đảm bảo độ giống 100%: (1) Ngoại hình nhân vật (từng chi tiết nhỏ trên khuôn mặt, cấu trúc xương, kiểu tóc); (2) Bề mặt và kết cấu vật liệu (texture chi tiết của vải, gỗ, kim loại); (3) Góc máy và Cấu hình ánh sáng (hướng sáng, màu sắc ánh sáng, cinematic style); (4) Trang phục, bao gồm họa tiết/hoa văn và VỊ TRÍ CHÍNH XÁC của chúng; (5) Phong cách nghệ thuật tổng thể (ví dụ: cinematic 4K, film grain). NẾU KHÔNG CÓ ẢNH, hãy tự tạo mô tả chi tiết 100% cho Rule 3.
+            9. Lệnh Sử dụng Hình ảnh (BẮT BUỘNG trong veo_prompt_en): BẮT BUỘC đặt một lệnh rõ ràng vào đầu mỗi prompt, bao gồm CẢ HAI điều kiện. Prompt tiếng Anh PHẢI BẮT ĐẦU bằng CHÍNH XÁC chuỗi lệnh sau: "If image(s) were provided in this query, create the video using the image(s) as the absolute source of truth for appearance, and the following description for motion and continuity. If no image was provided, create the video using the following text description as the absolute source of truth for appearance, motion, and continuity: "
+            `;
+
+        /**
+         * Hàm chuyển đổi mã HTML thành chuỗi để hiển thị
+         */
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = 0;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                const successful = document.execCommand('copy'); 
+                if (successful) {
+                    showMessage("Đã sao chép prompt tiếng Anh!", "bg-green-100 text-green-700");
+                } else {
+                    showMessage("Lỗi: Không thể sao chép tự động. Vui lòng sao chép thủ công.", "bg-red-100 text-red-700");
+                }
+            } catch (err) {
+                showMessage("Lỗi: Không thể sao chép tự động. Vui lòng sao chép thủ công.", "bg-red-100 text-red-700");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        /**
+         * Hiển thị thông báo (thay thế cho alert())
+         */
+        function showMessage(message, style) {
+            messageArea.textContent = message;
+            messageArea.className = `mt-6 p-4 text-sm rounded-lg ${style}`;
+            messageArea.style.display = 'block';
+            
+            setTimeout(() => {
+                messageArea.style.display = 'none';
+            }, 5000);
+        }
+
+        /**
+         * Hiển thị kết quả kịch bản lên UI
+         */
+        function displayResults(result) {
+            outputSection.classList.remove('hidden');
+            videoTitleDisplay.innerHTML = `🎬 Tên Video: <span class="font-bold">${result.video_title}</span>`;
+            scenesContainer.innerHTML = '';
+
+            result.scenes.forEach(scene => {
+                const sceneCard = document.createElement('div');
+                sceneCard.className = 'scene-card card p-5 flex flex-col space-y-3';
+                
+                sceneCard.innerHTML = `
+                    <div class="flex justify-between items-center pb-2 border-b border-blue-200">
+                        <h3 class="text-lg font-bold text-blue-700">Phân Cảnh ${scene.scene_number} (${scene.duration_seconds})</h3>
+                        <button class="copy-btn px-3 py-1 text-xs font-medium rounded-full text-white bg-green-500 hover:bg-green-600 transition duration-150">
+                            Sao Chép Prompt
+                        </button>
+                    </div>
+
+                    <p class="text-gray-900">
+                        <span class="font-semibold text-gray-700">Kịch bản (Tiếng Việt):</span> 
+                        <span class="block mt-1">${scene.vietnamese_script}</span>
+                    </p>
+
+                    <div class="prompt-box">
+                        <span class="font-semibold text-gray-800 block mb-1">PROMPT VEO 3 (Tiếng Anh - Liên Tục 100%):</span>
+                        <code class="text-sm text-gray-900 whitespace-pre-wrap block">${scene.veo_prompt_en}</code>
+                    </div>
+                `;
+                scenesContainer.appendChild(sceneCard);
+            });
+
+            // Gắn sự kiện sao chép: lấy nội dung trực tiếp từ thẻ <code>
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const promptCodeElement = event.target.closest('.scene-card').querySelector('code');
+                    if (promptCodeElement) {
+                        copyToClipboard(promptCodeElement.textContent.trim());
+                    } else {
+                        showMessage("Lỗi: Không tìm thấy nội dung prompt để sao chép.", "bg-red-100 text-red-700");
+                    }
+                });
+            });
+        }
+
+        /**
+         * Xử lý logic gọi API Gemini
+         */
+        async function generatePrompts() {
+            const videoIdea = videoIdeaInput.value.trim();
+            const numScenes = parseInt(numScenesInput.value);
+            const imageFiles = imageUpload.files;
+            
+            let multimodalParts = [];
+
+            if (!videoIdea) {
+                showMessage("Vui lòng nhập tóm tắt ý tưởng video.", "bg-red-100 text-red-700");
+                return;
+            }
+            if (numScenes < 1 || numScenes > 100 || isNaN(numScenes)) { 
+                 showMessage("Số phân cảnh phải từ 1 đến 100.", "bg-red-100 text-red-700");
                 return;
             }
 
-            const { setting, characters, action } = generatedDetails;
-            
-            // Construct the final English prompt
-            const promptParts = ["A cinematic, photorealistic 8-second video."];
-            if (setting) promptParts.push(`Setting: ${setting}`);
-            if (characters) promptParts.push(`Characters: ${characters}`);
-            if (action) promptParts.push(`Action: ${action}`);
+            // --- Cập nhật UI trạng thái Loading ---
+            generateBtn.disabled = true;
+            btnText.textContent = "Đang Tạo Kịch Bản...";
+            loadingSpinner.classList.remove('hidden');
+            outputSection.classList.add('hidden');
+            messageArea.style.display = 'none';
 
-            if (dialogue) {
-                promptParts.push(`The spoken dialogue must be in clear, easy-to-understand Vietnamese. A character says: "${dialogue}"`);
-            } else {
-                promptParts.push(`IMPORTANT: The final video must feature spoken dialogue in clear, easy-to-understand Vietnamese if appropriate for the scene; otherwise, it can be silent.`);
+            // 1. Chuẩn bị Multimodal Data
+            let userQuery = `Dựa trên ý tưởng sau: "${videoIdea}", hãy tạo một video gồm ${numScenes} phân cảnh. Đảm bảo tuân thủ nghiêm ngặt 9 quy tắc đã cho.`; // Updated rule count
+            
+            // Xử lý Images
+            if (imageFiles.length > 0) {
+                try {
+                    showMessage(`Đang tải ${imageFiles.length} ảnh lên và phân tích...`, "bg-yellow-100 text-yellow-700");
+                    const promises = Array.from(imageFiles).map(file => fileToBase64(file));
+                    const base64Results = await Promise.all(promises);
+
+                    base64Results.forEach(res => {
+                        multimodalParts.push({
+                            inlineData: {
+                                mimeType: res.mimeType,
+                                data: res.data
+                            }
+                        });
+                    });
+                    
+                } catch (e) {
+                    console.error("Lỗi chuyển đổi tệp hình ảnh:", e);
+                    showMessage("Lỗi: Không thể xử lý tệp hình ảnh. Vui lòng thử lại.", "bg-red-100 text-red-700");
+                    resetUI();
+                    return;
+                }
+            } 
+            
+            // 2. Xây dựng Payload
+            // Đặt các phần multimodal (image) lên đầu, sau đó là phần text query
+            const contentsParts = [...multimodalParts, { text: userQuery }]; 
+            
+            const payload = {
+                contents: [{ parts: contentsParts }],
+                systemInstruction: { parts: [{ text: systemInstructionText }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: responseSchema
+                }
+            };
+
+            // 3. Thực hiện API Call với Exponential Backoff
+            const maxRetries = 3;
+            let currentRetry = 0;
+
+            while (currentRetry < maxRetries) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    const candidate = result.candidates?.[0];
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        const jsonText = candidate.content.parts[0].text;
+                        const parsedJson = JSON.parse(jsonText);
+                        displayResults(parsedJson);
+                        showMessage("Tạo kịch bản thành công! Hãy sao chép prompt tiếng Anh để tạo video.", "bg-blue-100 text-blue-700");
+                        return; // Thành công, thoát khỏi vòng lặp
+                    } else {
+                        // Thử phân tích lỗi JSON nếu có thể
+                        throw new Error("Phản hồi từ Gemini không chứa nội dung hợp lệ hoặc JSON bị lỗi.");
+                    }
+
+                } catch (error) {
+                    console.error("Lỗi API/JSON:", error);
+                    currentRetry++;
+                    if (currentRetry < maxRetries) {
+                        const delay = Math.pow(2, currentRetry) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay)); // Exponential backoff
+                    } else {
+                        showMessage(`Lỗi hệ thống: Không thể tạo kịch bản sau ${maxRetries} lần thử. Vui lòng kiểm tra lại ý tưởng hoặc thử lại sau.`, "bg-red-100 text-red-700");
+                    }
+                }
             }
-
-            const finalPrompt = promptParts.join('\n\n');
             
-            // Display the output
-            promptOutput.textContent = finalPrompt;
-            outputSection.classList.remove('hidden');
-        });
+        }
 
-        // Event listener for the copy button
-        copyBtn.addEventListener('click', () => {
-            const textToCopy = promptOutput.textContent;
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = textToCopy;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            
+        // --- Gắn sự kiện cho nút Tạo ---
+        generateBtn.addEventListener('click', generatePrompts);
+
+        // --- Reset UI sau khi hoàn thành hoặc thất bại ---
+        function resetUI() {
+            generateBtn.disabled = false;
+            btnText.textContent = "Tạo Kịch Bản & Prompt";
+            loadingSpinner.classList.add('hidden');
+        }
+
+        // Gắn hàm resetUI vào finally để đảm bảo UI được khôi phục dù thành công hay thất bại
+        generateBtn.addEventListener('click', async () => {
             try {
-                document.execCommand('copy');
-                copyFeedback.textContent = 'Đã sao chép!';
-                copyBtn.classList.add('text-green-400');
-            } catch (err) {
-                copyFeedback.textContent = 'Sao chép thất bại!';
-                console.error('Failed to copy text: ', err);
+                await generatePrompts();
+            } finally {
+                resetUI();
             }
-            
-            document.body.removeChild(tempTextArea);
-
-            setTimeout(() => {
-                copyFeedback.textContent = '';
-                copyBtn.classList.remove('text-green-400');
-            }, 2000);
         });
+
     </script>
 </body>
 </html>
-
